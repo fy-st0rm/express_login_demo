@@ -1,8 +1,14 @@
+require("dotenv").config();
+
 const express = require("express");
 const url = require("url");
 const router = express.Router();
 
 const db = require("../database");
+const auth = require("../auth");
+const jwt = require("jsonwebtoken");
+
+const uuid = require("uuid");
 
 router.get("/", (req, res, next) => {
 	res.render("login", { result: req.query.result });
@@ -31,7 +37,7 @@ router.post("/", (req, res, next) => {
 		}
 
 		// If the password doesnt match
-		var db_pass = results[0].password;
+		let db_pass = results[0].password;
 		if (password != db_pass) {
 			res.redirect(url.format({
 				pathname: "login",
@@ -42,10 +48,23 @@ router.post("/", (req, res, next) => {
 			return;
 		}
 
+		let user_id = uuid.v4();
+		let user = {
+			name: username,
+			id: user_id
+		};
+
+		let access_token = auth.gen_access_token(user);
+		let refresh_token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+
+		let jwt_obj = new auth.JWT_Object(access_token, refresh_token);
+		req.app.get("jwt_objects")[user_id] = jwt_obj;
+
 		res.redirect(url.format({
-			pathname: "sucess",
+			pathname: "token",
 			query: {
-				"username": username
+				"username": username,
+				"user_id": user_id
 			}
 		}));
 	});

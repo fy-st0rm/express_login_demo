@@ -9,6 +9,7 @@ const index_router = require("./routes/index");
 const login_router = require("./routes/login");
 const signup_router = require("./routes/sign_up");
 const sucess_router = require("./routes/sucess");
+const token_router = require("./routes/token");
 
 // Express app
 const app = express();
@@ -20,6 +21,9 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.set("port", port);
 
+let jwt_objects = {};
+app.set("jwt_objects", jwt_objects);
+
 // Setting up application settings
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -29,6 +33,7 @@ app.use("/", index_router);
 app.use("/login", login_router);
 app.use("/sign_up", signup_router);
 app.use("/sucess", sucess_router);
+app.use("/token", token_router);
 
 // Running
 const server = http.createServer(app);

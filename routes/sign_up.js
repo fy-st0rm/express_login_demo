@@ -37,10 +37,11 @@ router.post("/", (req, res, next) => {
 				return;
 			}
 
-			res.redirect(url.format({
-				pathname: "/sucess",
+			res.redirect(307, url.format({
+				pathname: "/login",
 				query: {
-					"username": username
+					"username": username,
+					"password": password
 				}
 			}));
 		});
